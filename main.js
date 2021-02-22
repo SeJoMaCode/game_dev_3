@@ -65,7 +65,7 @@ document.addEventListener('click', e => {
 
 ws.addEventListener('message', event => {
     const message_data = JSON.parse(message.data); 
-        if(message_data.Game !== our_game) {
+        if(message_data.Game !== gameName) {
             return; 
         }
     console.log(message_data)
