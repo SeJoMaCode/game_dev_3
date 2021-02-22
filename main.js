@@ -5,7 +5,7 @@ let version = '0.0.0'
 let started = false
 const gameName = 'seth_game_3'
 const clientName = Math.random()
-const socket = new WebSocket('wss://southwestern.media/game_dev');
+const ws = new WebSocket('wss://southwestern.media/game_dev');
 
 
 window.onload = init;
@@ -20,9 +20,7 @@ function init(){
 
 function gameLoop(timeStamp){
     window.onresize = resize()
-
     draw()
-
     window.requestAnimationFrame(gameLoop)
 }
 
@@ -37,6 +35,23 @@ document.addEventListener('click', click => {
     }
 })
 
+document.addEventListener("keydown", event => {
+    if (event.isComposing || event.code === 229) {
+      return;
+    }
+})
+
+ws.addEventListener('open', open => {
+    console.log('WEBSOCKETS OPENED');
+});
+
+ws.addEventListener('close', close => {
+    console.log('WEBSOCKETS CLOSED'); 
+}); 
+ws.addEventListener('error', ws_error => {
+    console.log('WEBSOCKETS ERROR'); 
+}); 
+
 document.addEventListener('mousemove', e => {
     const data = {}
     data.Game = gameName
@@ -45,29 +60,18 @@ document.addEventListener('mousemove', e => {
     our_message.x = e.clientX
     our_message.y = e.clientY
     data.Message = JSON.stringify(our_message)
-    socket.send(JSON.stringify(data))
+    ws.send(JSON.stringify(data))
 })
 
-document.addEventListener("keydown", event => {
-    if (event.isComposing || event.code === 229) {
-      return;
-    }
-    if (event.code === 'Space') {
-        return
-    }
-})
-
-socket.addEventListener('open', open => {
-    console.log('WEBSOCKETS OPENED');
-}); 
-
-socket.addEventListener('message', event => {
-    let message = JSON.parse(event.data)
-    console.log(message)
+ws.addEventListener('message', event => {
+    const message_data = JSON.parse(message.data); 
+        if(message_data.Game !== our_game) {
+            return; 
+        }
+    console.log(message_data)
 }); 
 
 function draw(){
-
     ctx.clearRect(0,0, c.width, c.height)
 
     if(!started){
