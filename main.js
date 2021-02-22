@@ -52,7 +52,7 @@ ws.addEventListener('error', ws_error => {
     console.log('WEBSOCKETS ERROR'); 
 }); 
 
-document.addEventListener('mousemove', e => {
+document.addEventListener('click', e => {
     const data = {}
     data.Game = gameName
     data.Name = clientName
