@@ -4,6 +4,7 @@ let version = '0.0.0'
 
 let started = false
 const gameName = 'seth_game_3'
+const clientName = Math.random()
 const socket = new WebSocket('wss://southwestern.media/game_dev');
 
 
@@ -34,6 +35,17 @@ document.addEventListener('click', click => {
     if(!started){
         started = true
     }
+})
+
+document.addEventListener('mousemove', e => {
+    const data = {}
+    data.Game = gameName
+    data.Name = clientName
+    const our_message = {}
+    our_message.x = e.clientX
+    our_message.y = e.clientY
+    data.Message = JSON.stringify(our_message)
+    socket.send(JSON.stringify(data))
 })
 
 document.addEventListener("keydown", event => {
