@@ -1,6 +1,6 @@
 let c;
 let ctx;
-let version = '0.0.2'
+let version = '0.0.3'
 
 let started = false
 const gameName = 'seth_game_3'
@@ -34,9 +34,7 @@ window.addEventListener('unload', unload => {
     const data = {}
     data.Game = clientName
     data.Name = clientName
-    const message_data = {}
-    message_data.Leave = true
-    data.Message = JSON.stringify(message_data);
+    data.Message = 'leaving'
     ws.send(JSON.stringify(data))
 })
 
@@ -75,6 +73,11 @@ ws.addEventListener('message', event => {
     const message_data = JSON.parse(event.data); 
     if(message_data.Game != gameName) {
         return; 
+    }
+    if(message_data.Message == 'leaving'){
+        console.log(game_events)
+        game_events = game_events.split(message_data.Name, 1)
+        console.log(game_events)
     }
     message_data.Message = JSON.parse(message_data.Message)
     game_events[message_data.Name] = {x: message_data.Message.x, y: message_data.Message.y}
