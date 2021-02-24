@@ -1,12 +1,12 @@
 let c;
 let ctx;
-let version = '0.0.0'
+let version = '0.0.1'
 
 let started = false
 const gameName = 'seth_game_3'
-const clientName = Math.random()
+const clientName = ''+Math.random()
 const ws = new WebSocket('wss://southwestern.media/game_dev');
-
+const game_events = {}
 
 window.onload = init;
 
@@ -29,10 +29,29 @@ function resize(){
     ctx.canvas.height = window.innerHeight;
 }
 
-document.addEventListener('click', click => {
+window.addEventListener('unload', unload => {
+    game_events[clientName] = undefined
+    const data = {}
+    data.Game = clientName
+    data.Name = clientName
+    const message_data = {}
+    message_data.Leave = true
+    data.Message = JSON.stringify(message_data);
+    ws.send(JSON.stringify(data))
+})
+
+document.addEventListener('click', e => {
     if(!started){
         started = true
     }
+    const data = {}
+    data.Game = gameName
+    data.Name = clientName
+    const our_message = {}
+    our_message.x = e.clientX
+    our_message.y = e.clientY
+    data.Message = JSON.stringify(our_message)
+    ws.send(JSON.stringify(data))
 })
 
 document.addEventListener("keydown", event => {
@@ -52,27 +71,27 @@ ws.addEventListener('error', ws_error => {
     console.log('WEBSOCKETS ERROR'); 
 }); 
 
-document.addEventListener('click', e => {
-    const data = {}
-    data.Game = gameName
-    data.Name = clientName
-    const our_message = {}
-    our_message.x = e.clientX
-    our_message.y = e.clientY
-    data.Message = JSON.stringify(our_message)
-    ws.send(JSON.stringify(data))
+ws.addEventListener('message', event => {
+    const message_data = JSON.parse(event.data); 
+    if(message_data.Game != gameName) {
+        return; 
+    }
+    message_data.Message = JSON.parse(message_data.Message)
+    game_events[message_data.Name] = {x: message_data.Message.x, y: message_data.Message.y}
 })
 
-ws.addEventListener('message', event => {
-    const message_data = JSON.parse(message.data); 
-        if(message_data.Game !== gameName) {
-            return; 
-        }
-    console.log(message_data)
-}); 
+// class choice {
+//     constructor()
+// }
 
 function draw(){
     ctx.clearRect(0,0, c.width, c.height)
+
+    Object.keys(game_events).forEach(key => {
+        const player = game_events[key]; 
+        ctx.fillStyle = '#F00'; 
+        ctx.fillRect(player.x, player.y, 20, 20); 
+    }); 
 
     if(!started){
         ctx.fillStyle = '#000000'
