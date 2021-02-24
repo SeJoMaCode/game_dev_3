@@ -48,8 +48,8 @@ document.addEventListener('click', e => {
     data.Game = gameName
     data.Name = clientName
     const our_message = {}
-    our_message.x = e.clientX
-    our_message.y = e.clientY
+    our_message.x = e.clientX/c.width
+    our_message.y = e.clientY/c.height
     data.Message = JSON.stringify(our_message)
     ws.send(JSON.stringify(data))
 })
@@ -80,17 +80,13 @@ ws.addEventListener('message', event => {
     game_events[message_data.Name] = {x: message_data.Message.x, y: message_data.Message.y}
 })
 
-// class choice {
-//     constructor()
-// }
-
 function draw(){
     ctx.clearRect(0,0, c.width, c.height)
 
     Object.keys(game_events).forEach(key => {
         const player = game_events[key]; 
         ctx.fillStyle = '#F00'; 
-        ctx.fillRect(player.x, player.y, 20, 20); 
+        ctx.fillRect((player.x*c.width)-10, (player.y*c.height)-10, 20, 20); 
     }); 
 
     if(!started){
