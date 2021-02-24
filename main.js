@@ -1,6 +1,6 @@
 let c;
 let ctx;
-let version = '0.0.1'
+let version = '0.0.2'
 
 let started = false
 const gameName = 'seth_game_3'
